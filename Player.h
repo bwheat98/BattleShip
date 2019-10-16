@@ -9,7 +9,16 @@
 * \Brief:  File is header file
 * \copyright: Group "Big SegFault Energy" All rights reserved
 */
-
+/**
+* \Author: Hunter Cobb
+* \Author: Zackariah Khazraeinazmpour
+* \Author: Brandon Wheat
+* \Author: Justin Khounsombath
+* \Author: William Burdick
+* \File:	 Player.cpp
+* \Date:   10/20/2019
+* \Brief:  Player header file that plans out what exactly a player can do and what a player consists of.
+*/
 #ifndef PLAYER_H
 #define PLAYER_H
 
@@ -81,6 +90,6 @@ public:
   *	@post the the player's board
   * @return player's board
   */
-  Board* getBoard() const;
+  Board* getBoard();
 };
 #endif

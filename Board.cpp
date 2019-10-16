@@ -9,11 +9,144 @@
 * \Brief:  File is cpp file
 * \copyright: Group "Big SegFault Energy" All rights reserved
 */
-
+/**
+* \Author: Hunter Cobb
+* \Author: Zackariah Khazraeinazmpour
+* \Author: Brandon Wheat
+* \Author: Justin Khounsombath
+* \Author: William Burdick
+* \File:	 Board.cpp
+* \Date:   10/20/2019
+* \Brief:  Class that acts as the data structure for ships and player shots.
+*/
 #include "Board.h"
 #include <sstream>
 #include <limits>
+#include <cstdlib>
+using namespace std;
+////////////////####################NEW_CODE###############################################
+void Board::setupBoard_AI()
+{
+srand( time(NULL) );
+std::string ai_Placement = "";
+int rand_Orientation_Num = 0; //FOR_RANDOM_NUMBER_GENERATION(1 or 2) FOR ORIENTATION (rand()%2;)
+std::string orientationHorV = "";
+m_ship =  new Ship[numberOfShips];
+shipsLeft= numberOfShips;
+bool validLoc = false;
+std::string temp;
+for(int i = 0; i < numberOfShips; i++)
+{
+	m_ship[i].createShip(i+1);	//creates a ship at each index, of which the size corresponds to the index +1 (eg. index 0 houses ship of length 1, index 1 houses ship of length 2)
+	if(m_ship[i].getLength() == 1)	//if the ship is length 1, we do not need to do horizontal or vertical collision checks, so we just ask where to place it
+	{
+		ai_Placement = randPosGen();
+		guessConversion(ai_Placement);
+		myBoard[m_rowIndex][m_columnIndex] = ship;	//sets the user's guess location to a ship
+		m_ship[i].setCoordinate(ai_Placement, 0);
+}
+else{
+	rand_Orientation_Num = rand() % 2;
+	if(rand_Orientation_Num == 0)					//0 for horizontal; 1 for vertical
+	{
+			validLoc = false;
+			ai_Placement = randPosGen();
+			orientationHorV = "H";
+			while(validLoc == false)
+			{
+				if(noHorizontalCollision(ai_Placement,i+1))
+				{
+					guessConversion(ai_Placement);
+					temp = ai_Placement;
+					for(int j = 0; j<m_ship[i].getLength(); j++)
+					{
+						myBoard[m_rowIndex][m_columnIndex+j] = ship;
+						m_ship[i].setCoordinate(temp,j);
+						temp[0] = temp.at(0) + 1;
+					}
+					validLoc = true;
 
+				}
+				else
+				{
+					ai_Placement = randPosGen();
+				}
+			}
+	}
+	else{
+			orientationHorV = "V";
+			validLoc = false;
+			ai_Placement = randPosGen();
+			while(validLoc == false)
+			{
+				if(noVerticalCollision(ai_Placement,i+1))
+				{
+					guessConversion(ai_Placement);
+					temp = ai_Placement;
+					for(int j = 0; j < m_ship[i].getLength(); j++ )
+					{
+						myBoard[m_rowIndex+j][m_columnIndex] = ship;
+						m_ship[i].setCoordinate(temp, j);
+						temp[1] = temp.at(1) + 1;
+
+
+					}
+					validLoc = true;
+				}
+				else
+				{
+					ai_Placement = randPosGen();
+				}
+			}
+	}
+}
+
+}
+//printMyBoard();//to test if AI correctly places ships
+std::cout << "Press Enter to Start Game: ";
+
+std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+}
+std::string Board::randPosGen()
+{
+	std::string result="";
+	int rand_Letter_num = rand()%(8-1 + 1) + 1;
+	int rand_Num_Coord = rand()%(8-1 + 1) + 1;
+	rand_Letter_num+=64; //SETS_TO_CORRECT_ASCII_VAL
+	rand_Num_Coord+=48; //sets to correct ASCII val to allow for str concatination.
+	result +=(char)rand_Letter_num;
+	result +=(char)rand_Num_Coord;
+	return(result);
+}
+bool Board::isShipPos(int row, int col)
+{
+	if(myBoard[row][col] == "\033[1;32m∆\033[0m")
+	{
+			return(true);
+	}
+	else
+	{
+		return(false);
+	}
+}
+
+void Board::setShipsLeft(int tempNum, bool sunk)
+{
+	if(sunk == false)
+		{
+			shipsLeft = tempNum;
+		}
+	else if(sunk == true)
+	{
+		shipsLeft--;
+	}
+}
+
+int Board::getShipsLeft() const
+{
+	return shipsLeft;
+}
+////////////////####################OLD_CODE###############################################
 Board::Board(int shipnum)
 {
 	numberOfShips = shipnum;	//the number of ships per player.
@@ -94,15 +227,6 @@ void Board::printMyBoard()	//prints the current player's board
 	}
 }
 
-void Board::printIntermission()	//prints the intermission screen so player's can swap turns
-{
-	for(int i=0;i<40;i++)
-	{
-		std::cout << "\n\n\n\n\n\n";	//prints a lot of newlines to add blank space so that player's can swap turns without seeing each other's boards
-	}
-	std::cout << "When ready, please press Enter: ";
-	std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');	//takes in input of the user, basically ignoring any input so that the user can type anything
-}
 
 bool Board::updateMyBoard(std::string userGuess)	//updates the current player's board
 {
@@ -245,7 +369,6 @@ bool Board::noVerticalCollision(std::string userGuess, int shipLength)	//returns
  }
  return true;	//returns true since all the false checks were not hit, so there is no collision that would happen
 }
-
 void Board::setupBoard()	//sets up the board
 {
 	std::string userGuess;	//used to take in the user's location
@@ -255,6 +378,7 @@ void Board::setupBoard()	//sets up the board
 	bool HorV = false; //gets set to true if the user types "H" or "h" or "V" or "v"
 
 	m_ship =  new Ship[numberOfShips];	//creates an array of Ship objects, the amount is the number of ships
+	shipsLeft=numberOfShips;
 	for(int i = 0; i < numberOfShips; i++)
 	{
 		m_ship[i].createShip(i+1);	//creates a ship at each index, of which the size corresponds to the index +1 (eg. index 0 houses ship of length 1, index 1 houses ship of length 2)
@@ -280,7 +404,7 @@ void Board::setupBoard()	//sets up the board
 					m_ship[i].setCoordinate(userGuess, 0);	//sets the element in the m_ship array to the location string (eg. "A1", "B4"), and passes in the index as 0
 					printMyBoard();	//prints the newly updated board
 
-
+					cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 		}
 		else
 		{
@@ -363,6 +487,7 @@ void Board::setupBoard()	//sets up the board
 																					//so, when then override temp[1] to 2, hence traversing the rows
 
 							}
+							cout << "\n\n\n\n\n\n\n\n\n\n\n";
 							printMyBoard();	//prints the updated board
 
 							validLocation = true;	//sets valid location to true to help break out of loop
@@ -394,11 +519,6 @@ void Board::setupBoard()	//sets up the board
 		}
 
 	}
-	std::cout << "Press Enter to go to the next Player's turn: ";
-
-	std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n'); //basically lets the user type in anything, ignoring their input
-	printIntermission();	//prints the intermission screen
-
 
 
 }
@@ -412,6 +532,7 @@ int Board::getNumberofShips() const	//returns the number of ships
 {
 	return numberOfShips;
 }
+
 
 Ship* Board::getShip() const	//returns m_ship
 {

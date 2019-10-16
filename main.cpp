@@ -9,13 +9,21 @@
 * \Brief:  File is main file
 * \copyright: Group "Big SegFault Energy" All rights reserved
 */
-
+/**
+* \Author: Hunter Cobb
+* \Author: Zackariah Khazraeinazmpour
+* \Author: Brandon Wheat
+* \Author: Justin Khounsombath
+* \Author: William Burdick
+* \File:	 Executive.cpp
+* \Date:   10/20/2019
+* \Brief:  main file that starts game.
+*/
 #include <iostream>
 #include "Executive.h"			//include executive for game functions
 
 int main()
 {
-	std::cout << "Welcome to BattleShip!\n";		//print welcome message
 	Executive exec;	//create executive object to utilize all game functions
 	return 0;				//exit program
 }

@@ -9,7 +9,16 @@
 * \Brief:  File is header file
 * \copyright: Group "Big SegFault Energy" All rights reserved
 */
-
+/**
+* \Author: Hunter Cobb
+* \Author: Zackariah Khazraeinazmpour
+* \Author: Brandon Wheat
+* \Author: Justin Khounsombath
+* \Author: William Burdick
+* \File:	 Board.h
+* \Date:   10/20/2019
+* \Brief:  Class that acts as the data structure for ships and player shots.
+*/
 #ifndef BOARD_H
 #define BOARD_H
 
@@ -27,7 +36,6 @@
 class Board
 {
 private:
-	std::string shotBoard[8][8];
 	std::string myBoard[8][8];
 	std::string m_rowNames = "ABCDEFGH";
 	std::string m_columnNames = "12345678";
@@ -39,7 +47,7 @@ private:
 	*	@post converts userGuess to two array indices, updating rowIndex and columnIndex
 	*/
 	void guessConversion(std::string userGuess);
-
+	int shipsLeft = numberOfShips;
 	std::string blueTilde;
 	std::string redHit;
 	std::string whiteMiss;
@@ -48,6 +56,40 @@ private:
 	Ship* m_ship = nullptr;
 
 public:
+	/////////////////////////NEW_CODE//////////////////////////////
+	/**
+	* @pre none
+	*	@param none
+	*	@post asks the player where they want to place the ships.
+	* uses with withinBoundary and edits myBoard and shotBoard
+	*/
+	void setupBoard_AI();
+	/**
+	* @pre none
+	*	@param none
+	*	@return: - The String containing the randomly generated coordinate.
+	*/
+	std::string randPosGen();
+bool isShipPos(int row, int col);
+
+/**
+*	private member variable helper function
+* @pre none
+*	@param takes a int for number of ships
+*	@post change private member variable shipsLeft to tempNum
+*/
+void setShipsLeft(int tempNum, bool sunk);
+
+/**
+*	private member variable helper function
+* @pre none
+*	@param none
+*	@post get private member variable shipsLeft
+* @return number of Ships left
+*/
+int getShipsLeft() const;
+	////////////////////////////OLD_CODE//////////////////////////
+	std::string shotBoard[8][8];
 	/**
 	* @pre none
 	*	@post board constructor
@@ -80,15 +122,6 @@ public:
 	*	@post print the player board
 	*/
 	void printMyBoard();
-
-	/**
-	* @pre none
-	*	@param none
-	*	@post prints a blank screen to hide previous player's board
-	* and asks the current player to press enter before next step
-	*/
-	void printIntermission();
-
 	/**
 	*	private member variable helper function
 	* @pre none
@@ -105,6 +138,8 @@ public:
 	* @return number of Ships
 	*/
 	int getNumberofShips() const;
+
+
 
 	/**
 	* @pre none
